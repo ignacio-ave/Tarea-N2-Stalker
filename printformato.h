@@ -5,5 +5,4 @@
 void printMenu();
 void printMensajeGeneroJugadorCorrectamente();
 void printMensajeJugadorRepetido();
-void mostrarDatosJugador();
 #endif // PRINTFORMATO_H

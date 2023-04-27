@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "hashmap.h"
 #include "printformato.h"
-#include "pila.h"
+#include "stack.h"
 
 void printMenu() {
     printf("\n");
@@ -47,33 +47,7 @@ void mostrarSoloInventario(Pair *par){
   }
   printf("\n");*/
 
-void mostrarDatosJugador(Pair *par) {
-    // Se muestran los datos del jugador
-    Data *aux = firstList(par->versionesJugador);
-    printf("\n");
-    printf("╭──────────────────────────────────────────────────────────╮\n");
-    printf("│                DATOS DEL JUGADOR                         │\n");
-    printf("├──────────────────────────────────────────────────────────┤\n");
-    printf("│ Nombre        : %-40s │\n", par->key);
-    printf("│ Puntos        : %-40ld │\n", aux->puntosHabilidad);
-    printf("├──────────────────────────────────────────────────────────┤\n");
-    printf("│                        INVENTARIO                        │\n");
-    printf("├──────────────────────────────────────────────────────────┤\n");
 
-    // Si no hay items en el inventario, se muestra un mensaje
-    if (aux->nObjetos == 0) {
-        printf("│  No hay items en el inventario                           │\n");
-    } else {
-        char **items = aux->items;
-        // Se muestran los items
-        
-        for (int i = 0; i < aux->nObjetos; i++) {
-           printf("│");
-            printf("  -  %-*s│\n",53,items[i]);
-        }
-    }
-    printf("╰──────────────────────────────────────────────────────────╯\n");
-}
 
 void printMensajeJugadorRepetido(){
   printf("Este nombre de usuario ya existe\n");

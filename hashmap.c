@@ -4,14 +4,10 @@
 #include <math.h>
 #include <ctype.h>
 #include "hashmap.h"
-#include "pila.h"
 
 
 typedef struct HashMap HashMap;
 int enlarge_called=0;
-
-
-
 
 struct HashMap {
     Pair ** buckets;
@@ -20,15 +16,10 @@ struct HashMap {
     long current; //indice del ultimo dato accedido
 };
 
-Pair * createPair( char * key) {
+Pair * createPair( char * key,  void * value) {
     Pair * new = (Pair *)malloc(sizeof(Pair));
     new->key = key;
-    new->versionesJugador = createList();
-    Data *aux = (Data*) malloc(sizeof(Data));
-    aux->nObjetos = 0;
-    aux->puntosHabilidad = 0;
-    aux->items = (char**) malloc(10 * sizeof(char**));
-    pushFront(new->versionesJugador, aux);
+    new->value = value;
     return new;
 }
 
@@ -48,150 +39,98 @@ int is_equal(void* key1, void* key2){
 }
 
 
-void insertMap(HashMap * map, char * key) {
-
-  HashMap *local=map;
-  Pair *par=createPair(key);
-  Pair **elementos=local->buckets;
-  long i=hash(key,local->capacity);
-  
-  while(1)
-  {
-
-    if(elementos[i]==NULL || elementos[i]->key==NULL)
-     {
-      elementos[i]=par;
-      break;
-      
-     }
-    if(strcmp(elementos[i]->key,key)==0)return;
-    if(i==hash(key,local->capacity)-1)
-    {
-      break;
+void insertMap(HashMap * map, char * key, void * value) {
+  long indiceH = hash(key, map->capacity);
+  Pair *aux = createPair(key, value);
+  if (map->size / map->capacity > 0.7)
+    enlarge(map);
+  for (long i = 0; i < map->capacity;i++) {
+    if (!map->buckets[indiceH] || !map->buckets[indiceH]->key) {
+      map->buckets[indiceH] = aux;
+      map->size++;
+      map->current = indiceH;
+      return;
     }
-    if(i==local->capacity-1)
-    {
-      i=-1;
-    }
-    i++;
+    if (is_equal(key, map->buckets[indiceH]->key))
+      return;
+    indiceH++;
+    if (indiceH == map->capacity)
+      indiceH = 0;
   }
-  local->size++;
-  local->current=i;
-
+  // enlarge(map);
+  // insertMap(map, key, value);
 }
 
 void enlarge(HashMap * map) {
-  //enlarge_called = 1;
-  HashMap *local=map;
-  Pair **elementoAntiguo=local->buckets;
-  long capacidadAntigua=local->capacity;
-  local->capacity*=2;
-  local->size=0;
-  Pair **elementoNuevo=malloc(sizeof(elementoNuevo)*local->capacity);
-  local->buckets=elementoNuevo;
-  long indice=0;
-
-  while(indice<capacidadAntigua)
-    {
-      if(elementoAntiguo[indice]!=NULL && elementoAntiguo[indice]->key!=NULL)
-      {
-        insertMap(local, elementoAntiguo[indice]->key);
-      }
-      
-      indice++;    
+    // enlarge_called = 1; //no borrar (testing purposes)
+  Pair **old_buckets = map->buckets;
+  map->buckets = (Pair**) calloc(map->capacity*2, sizeof(Pair*));
+  map->capacity *= 2;
+  map->size = 0;
+  map->current = -1;
+  for (long i = 0; i < map->capacity/2; i++) {
+    if (old_buckets[i]) {
+      if (old_buckets[i]->key)
+        insertMap(map, old_buckets[i]->key, old_buckets[i]->value);
     }
+  }
 }
 
 
 HashMap * createMap(long capacity) {
-
-  HashMap *local=malloc(sizeof(HashMap));
-  Pair **elementos=(Pair**)malloc(sizeof(Pair)*capacity);
-  for(int i=0;i<capacity;i++)
-    {
-      elementos[i]=NULL;
-    }
-  local->buckets=elementos;
-  local->size=0;
-  local->current=-1;
-  local->capacity=capacity;
-
+  HashMap *local = (HashMap*) malloc(sizeof(HashMap));
+  local->buckets = (Pair**) calloc(capacity, sizeof(Pair*));
+  local->size = 0;
+  local->capacity = capacity;
+  local->current = -1;
   return local;
 }
 
 void eraseMap(HashMap * map,  char * key) {    
-
-  HashMap *local=map;
-  Pair *par=searchMap(local, key);
-  if(par==NULL)return;
-  par->key=NULL;
-  local->size--;
+  if (searchMap(map, key)) {
+    map->buckets[map->current]->key = NULL;
+    map->size--;
+  }
 }
 
 Pair * searchMap(HashMap * map,  char * key) {   
-  HashMap *local=map;
-  Pair **elementos=local->buckets;
-  long indice=hash(key,local->capacity);
-
-  while(1)
-    {
-      if(elementos[indice]==NULL)return NULL;
-      if(strcmp(elementos[indice]->key,key)==0)
-      {
-        local->current=indice;
-        return elementos[indice];
-        
-      }
-      if(indice==local->capacity)
-      {
-        indice=-1;
-      }
-      if(indice==hash(key, local->capacity)-1)break;
-      indice++;
-      
+  long indiceH = hash(key, map->capacity);
+  for (long i = 0; i < map->capacity;i++) {
+    if (!map->buckets[indiceH])
+      return NULL;
+    else if (!map->buckets[indiceH]->key)
+      return NULL;
+    if (is_equal(key, map->buckets[indiceH]->key)) {
+      map->current = indiceH;
+      return map->buckets[indiceH];
     }
+    indiceH++;
+    if (indiceH == map->capacity)
+      indiceH = 0;
+  }
   return NULL;
 }
 
 Pair * firstMap(HashMap * map) {
-  HashMap *local=map;
-  Pair **elemento=local->buckets;
-  long indice=0;
-  while(indice<local->capacity+1)
-    {
-      if(elemento[indice]!=NULL && elemento[indice]->key!=NULL)
-      {
-        local->current=indice;
-        return elemento[indice];
-      }
-      indice++;
+  for (long i = 0; i < map->capacity; i++) {
+    if (!map->buckets[i])
+      continue;
+    if (map->buckets[i]->key){
+      map->current = i;
+      return map->buckets[i];
     }
+  }
   return NULL;
 }
 
 Pair * nextMap(HashMap * map) {
-
- HashMap *local=map;
-  Pair **elemento=local->buckets;
-  long indice=local->current+1;
-  while(indice!=local->current)
-    {
-      if(indice==local->capacity-1)indice=0;
-      if(elemento[indice]!=NULL && elemento[indice]->key!=NULL)
-      {
-        local->current=indice;
-        return elemento[indice];
+  long pos = (map->current + 1);
+  for (long i = map->current; i < map->capacity; i++,pos++) {
+    if (map->buckets[pos])
+      if (map->buckets[pos]->key) {
+        map->current = pos;
+        return map->buckets[pos];
       }
-      indice++;
-    }
-    return NULL;
-}
-
-long sizeMap(HashMap *map){
-  if(map!=NULL){
-    return map->size;
   }
-  return -1;
+  return NULL;
 }
-
-
