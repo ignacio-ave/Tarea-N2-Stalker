@@ -34,7 +34,7 @@ int printInventario(char *palabra){
     size_t len = strlen(palabra);
     wchar_t wc;
     int tiene_acento = 0;
-    
+    // Este while recorre la palabra y va contando la cantidad de caracteres que tiene acento
     while (s < palabra + len) {
         size_t n = mbrtowc(&wc, s, len - (s - palabra), &state);
         if (n == (size_t) -2 || n == (size_t) -1) {
@@ -50,7 +50,7 @@ int printInventario(char *palabra){
     len-=tiene_acento;
     return len;
 }
-
+// Imprime la cantidad de espacios necesarios para que el formato de salida sea correcto
 void printEspacios(int cantidad){
 
   while(cantidad!=0){
@@ -64,7 +64,7 @@ void printEspacios(int cantidad){
 
 /*1*/  
 
-
+// Función para crear el perfil de un jugador
 void crearPerfil(HashMap *jugadores)
 {
   
@@ -77,12 +77,13 @@ void crearPerfil(HashMap *jugadores)
   scanf("%[^\n]",nombre);
   getchar();
 
-   
+  // Se verifica si el jugador ya existe
   if(searchMap(jugadores, nombre)){
     printMensajeJugadorRepetido();
     free(nombre);
     return;
   }
+
   if(nombre) printMensajeGeneroJugadorCorrectamente();
 
   //Inicia sus datos
@@ -91,12 +92,14 @@ void crearPerfil(HashMap *jugadores)
     printf("Error al reservar memoria\n");
     return;
   }
+  // Se inicializan los datos del jugador
   datos->pH = 0;
   datos->nObj = 0;
   datos->items = createMap(CantidadInicialDeItems);
   datos->versiones = stackCreate();
   Acciones *aux = (Acciones*) malloc(sizeof(Acciones));
   aux->ultimaAcc = 1;
+  // Se inserta la primera versión
   stackPush(datos->versiones, aux);
   
   // Se inserta el jugador en el mapa
@@ -111,6 +114,7 @@ void crearPerfil(HashMap *jugadores)
 
 /*2*/
 
+// Función para mostrar los datos de un jugador
 void mostrarDatosJugador(Pair *par) {
     // Se muestran los datos del jugador
     Jugador *aux = par->value;
@@ -175,18 +179,21 @@ void mostrarPerfil( HashMap *jugadores ) {
 }
 
 /*3*/
-
+// Función para agregar un item al inventario de un jugador
 void agregarItemDef(char *nombre, Jugador *datos, char *item, HashMap *itemsMap) {
+  // Se crea el item
   insertMap(datos->items,item,NULL);
   datos->nObj++;
   
   //Verifica si el item fue ingresado
   Pair *temp = searchMap(itemsMap,item);
+  // Si no existe el item en el mapa
   if (!temp){
     HashMap *loTienen = createMap(10);
     insertMap(loTienen,nombre, NULL);
     insertMap(itemsMap,item,loTienen);
   }
+  // Si existe el item en el mapa 
   else {
     if (!searchMap(temp->value,nombre)) {
         insertMap(temp->value,nombre,NULL);
@@ -194,7 +201,7 @@ void agregarItemDef(char *nombre, Jugador *datos, char *item, HashMap *itemsMap)
   }
 }
 
-
+// Función para agregar un item al inventario de un jugador
 void agregarItemBuscar (HashMap *jugadores, HashMap *itemsMap){
   // Se pide el nombre del jugador 
   char *nombre= malloc(sizeof(char) * MAXCAR ); 
@@ -247,17 +254,22 @@ void agregarItemBuscar (HashMap *jugadores, HashMap *itemsMap){
 
 // //busca el item y lo elimina con eliminarItem
 int eliminaItemDelJugador(char *nombre, Jugador *jugador,char *item, HashMap *itemsMap){
+  // Se busca el item en el inventario del jugador
   Pair *itemBuscado=searchMap(jugador->items, item);
+  // Si el item existe en el inventario del jugador
   if(itemBuscado || itemBuscado->key){
     jugador->nObj--;
     eraseMap(jugador->items, item);
     Pair *parItem = searchMap(itemsMap, item);
     HashMap *loTienen = parItem->value;
     eraseMap(loTienen, nombre);
+    // Si ya no hay jugadores que tengan el item, se elimina del mapa
     if (!firstMap(loTienen)) {
       eraseMap(itemsMap, item);
     }
     printf("Item eliminado correctamente\n");
+    
+    
     return 1;
   }
   printf("El item ingresado no existe en el inventario del jugador");
@@ -265,6 +277,8 @@ int eliminaItemDelJugador(char *nombre, Jugador *jugador,char *item, HashMap *it
 
 }
 
+
+// Función para eliminar un item del inventario de un jugador
 void eliminarItemJugadores(HashMap *jugadores, HashMap *itemsMap){
   //se pide el nombre del jugador
   char *nombre=malloc(sizeof(char)* MAXCAR);
@@ -285,17 +299,22 @@ void eliminarItemJugadores(HashMap *jugadores, HashMap *itemsMap){
   scanf("%[^\n]",item);
   getchar();
   printf("%s",item);
+  // Se verifica que se introdujo algo
   if(item==NULL){
     return;
   }
+  // Se elimina el item del inventario del jugador
   if (eliminaItemDelJugador(jugadorPair->key, jugadorData, item, itemsMap)) {
+    // Se agrega la acción al historial
     Acciones *accionEliminar = malloc(sizeof(Acciones));
+    // Se verifica que se asigno memoria
     if(accionEliminar==NULL){
       printf("error al asignar memoria");
       exit(1);
     }
     accionEliminar->objeto=item;
     accionEliminar->ultimaAcc=4;
+    // Se agrega la acción al historial
     stackPush(jugadorData->versiones, accionEliminar);
   }
   return;
@@ -332,9 +351,11 @@ void agregarPuntos(HashMap *jugadores) {
   // Se agregan los puntos al jugador
   Jugador *datos = jugador->value;
   datos->pH += puntos;
+  // Se agrega la acción al historial
   Acciones *new = (Acciones*) malloc(sizeof(Acciones));
   new->ultimaAcc = 5;
   new->ptosH = puntos;
+  // Se agrega la acción al historial
   stackPush(datos->versiones, new);
   printf("Se agregaron %ld puntos al jugador %s \n", puntos, nombre) ;
 }
@@ -343,25 +364,32 @@ void agregarPuntos(HashMap *jugadores) {
 
 /*6*/
 
+// Función para mostrar los items de un jugador
 void mostrarItemJugadores(HashMap *jugadores, HashMap *itemsMap){
   char *item=malloc(sizeof(char) * MAXCAR);
+  
   if (item == NULL) {
     printf("Error al asignar memoria.\n");
     exit(1);
   }
+  
   printf("Ingresa un item para averiguar que jugadores lo tienen: ");
   fgets(item, MAXCAR, stdin);
+  
+  // Se elimina el salto de linea
   if (item[strlen(item) -1] == '\n')
   {
     item[strlen(item) - 1] = '\0';
   }
 
   Pair *aux = searchMap(itemsMap, item);
+  // Si no existe el item
   if(!aux)
   {
     printf("Ningun jugador tiene %s en su inventario\n",item);
     return;
   }
+  // Se obtiene el mapa de jugadores que tienen el item
   HashMap *loTienen = aux->value;
   Pair* jugador = firstMap(loTienen);
   
@@ -395,6 +423,7 @@ void mostrarItemJugadores(HashMap *jugadores, HashMap *itemsMap){
   printf("│                     en su inventario                     │\n");
   printf("├──────────────────────────────────────────────────────────┤\n");
   
+  // Se recorre el mapa de jugadores que tienen el item
   while (jugador) {
     printf("│");
     printf("  -  %-*s│\n",53,jugador->key);
@@ -427,8 +456,11 @@ void deshacerUltimaAccion(HashMap *jugadores, HashMap *itemsMap) {
     return;
   }
 
+  // Se obtienen los datos del jugador
   Jugador *pj = jugador->value;
+  // Se verifica que el jugador tenga acciones para deshacer
   Acciones *ultima = stackTop(pj->versiones);
+  // Casos 
   switch (ultima->ultimaAcc) {
     case 1:
       printf("Jugador en estado base, no se puede deshacer\n");
@@ -452,29 +484,35 @@ void deshacerUltimaAccion(HashMap *jugadores, HashMap *itemsMap) {
 
 /*8 */
 
+
 void exportarDatos(HashMap *jugadores){
   
   if(jugadores==NULL){
     printf("No hay jugadores para exportar\n");
     return;
   }
+
   char *nombre = malloc (sizeof(char) * MAXCAR); 
   printf("Ingrese el nombre del archivo : ");
   scanf("%s", nombre) ; 
   
+  // Se crea el archivo
   FILE *archivo = fopen(nombre,"w");
   if (!archivo){
     printf("No se pude abrir el archivo\n");
     return;
   }
+  // Se escribe la cabecera
   fprintf(archivo, "Nombre,Puntos de habilidad,#items,Item 1,Item 2,Item 3,Item 4,Item 5,Item 6,Item 7,Item 8\n");
   
+  // Se obtiene el primer jugador
   Pair *local=firstMap(jugadores);
   if (local == NULL) {
     printf("No hay jugadores para exportar\n");
     fclose(archivo);
     return;
-  }
+  } 
+  // Se recorre el mapa de jugadores
   Jugador *jugador=local->value;
   while(local!=NULL && local->key!=NULL){
     
@@ -500,6 +538,7 @@ void exportarDatos(HashMap *jugadores){
         jugador=local->value;
     }
   }
+  // Se cierra el archivo
   fclose(archivo);
   printf("Jugadores exportados correctamente\n");
   
@@ -508,12 +547,14 @@ void exportarDatos(HashMap *jugadores){
 /*9. */
 
 
+// Funcion maximoCaracteres que recibe un archivo, un mapa de jugadores y un mapa de items
 void maximoCaracteres(FILE *archivo, HashMap *jugadores, HashMap *itemsMap){
 
   char car;
   
   int Jugadoress=0;
   int saltarlinea=0;
+  // Se recorre el archivo
   while(car!=EOF){
     if(saltarlinea==0){
       char *basura=malloc(sizeof(char)*500);
@@ -580,7 +621,7 @@ void maximoCaracteres(FILE *archivo, HashMap *jugadores, HashMap *itemsMap){
 
 
 
-
+// Funcion importarJugadores que recibe datos de un archivo y los guarda en un mapa de jugadores
 void importarJugadores(HashMap *jugadores, HashMap *itemsMap){
 
   if(jugadores==NULL){
@@ -590,13 +631,13 @@ void importarJugadores(HashMap *jugadores, HashMap *itemsMap){
   printf("ingrese el nombre del archivo a abrir: ");
   scanf("%[^\n]",ruta);
   getchar();
-
+  // Se abre el archivo
   FILE *archivo = fopen(ruta, "r");
   if(archivo==NULL){
     printf("No se pudo abrir el archivo");
     return;
   }
-
+  // Se llama a la funcion maximoCaracteres 
   maximoCaracteres(archivo,jugadores, itemsMap);
   
   fclose(archivo);
