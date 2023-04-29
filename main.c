@@ -371,14 +371,7 @@ void mostrarItemJugadores(HashMap *jugadores, HashMap *itemsMap){
   
   printf("╭──────────────────────────────────────────────────────────╮\n");
   printf("│                   Jugadores que tienen                   │\n");
-  /*if (long_dato % 2 == 0)
-  {
-    printf("│%*s%s%*s│\n", espacios, "", item, espacios, "");
-  }
-  else
-  {
-    printf("|%*s%s%*s |\n", espacios, "", item, espacios, "");
-  }*/
+  
   int espaciositemmedio=(58-printInventario(item))/2;
   if(espaciositemmedio%2==0){
     
