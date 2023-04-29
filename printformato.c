@@ -31,7 +31,7 @@ void printMensajeGeneroJugadorCorrectamente() {
 
 
 /*
-Funcion antigua:
+Funcion antigua: c
 void mostrarSoloInventario(Pair *par){
   
   // Si no hay items en el inventario, se muestra un mensaje
