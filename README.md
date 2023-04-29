@@ -15,7 +15,7 @@ Para compilar y ejecutar el programa, sigue estos pasos:
 
 ## Opciones que funcionan:
 # TEST
-
+# TEST VS CODE #APRETAR CTRL + S O GUARDAR 
 
 
 ### Herramientas usadas para el desarrollo:
