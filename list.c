@@ -132,7 +132,6 @@ void * popCurrent(List * list) {
   return aux;
 }
 
-// test commit 
 
 void cleanList(List * list) {
     while (list->head != NULL) {
