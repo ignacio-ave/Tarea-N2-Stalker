@@ -117,7 +117,7 @@ A continuación, llama a la función maximoCaracteres que lee los datos del arch
 
 Finalmente, se cierra el archivo y se muestra un mensaje informando la cantidad de jugadores importados exitosamente.
 
-### Herramientas usadas para el desarrollo:
+## Herramientas usadas para el desarrollo:
   - replit (Para desarrollar el programa en conjunto)
   - Visual Studio Code (Para desarrollar el programa individualmente)
   - Github (Para guardar un backup del programa)
@@ -137,5 +137,5 @@ Finalmente, se cierra el archivo y se muestra un mensaje informando la cantidad 
 | Ignacio    | 20           | 15             |  20          | 20               | 20               | 95               |
 | Vicente    | 20           | 20             |  15          | 20               | 20               | 95               |
 | Antonia    | 20           | 20             |  15          | 20               | 20               | 95               |
-| Carlos     | 20           | 20             |  20          | 20               | 20               | 100               |
+| Carlos     | 20           | 20             |  20          | 20               | 20               | 100              |
 
