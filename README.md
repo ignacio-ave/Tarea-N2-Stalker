@@ -14,9 +14,23 @@ Para compilar y ejecutar el programa, sigue estos pasos:
 
 
 ## Opciones que funcionan:
-# TEST
-# TEST VS CODE #APRETAR CTRL + S O GUARDAR 
+1.  Crear perfil (nombre)
+2.  Mostrar perfil (nombre)
+3.  Agregar item (nombre, item)
+4.  Eliminar item (nombre, item)
+5.  Agregar puntos de habilidad (nombre, puntos)
+6.  Mostrar jugador@s con item (item)
+7.  Deshacer última acción (nombre)
+8.  Importar/exportar datos a archivo CVS.
 
+### Crear perfil (nombre)
+La función crearPerfil permite crear un perfil de jugador en el programa. Esta función toma como argumento un puntero al HashMap jugadores que almacena los perfiles de los jugadores.
+
+Primero, la función solicita al usuario que ingrese el nombre del jugador. Si el jugador ya existe en el mapa, se muestra un mensaje informando que el jugador ya está registrado y se libera la memoria reservada para el nombre. Si el jugador no existe, se muestra un mensaje de éxito en la creación del perfil.
+
+Luego, se crea un objeto de tipo Jugador y se inicializan sus datos. Se crea un mapa items para almacenar los objetos del jugador y una pila versiones para almacenar las acciones realizadas.
+
+Finalmente, se inserta el perfil del jugador en el mapa de jugadores.
 
 ### Herramientas usadas para el desarrollo:
   - replit (Para desarrollar el programa en conjunto)
