@@ -32,7 +32,7 @@ Para compilar y ejecutar el programa, sigue estos pasos:
 7.  Deshacer última acción (nombre)
 8.  Importar/exportar datos a archivo CVS.
 
-### Crear perfil (nombre)
+### 1.  Crear perfil (nombre)
 La función crearPerfil permite crear un perfil de jugador en el programa. Esta función toma como argumento un puntero al HashMap jugadores que almacena los perfiles de los jugadores.
 
 Primero, la función solicita al usuario que ingrese el nombre del jugador. Si el jugador ya existe en el mapa, se muestra un mensaje informando que el jugador ya está registrado y se libera la memoria reservada para el nombre. Si el jugador no existe, se muestra un mensaje de éxito en la creación del perfil.
@@ -42,19 +42,19 @@ Luego, se crea un objeto de tipo Jugador y se inicializan sus datos. Se crea un 
 Finalmente, se inserta el perfil del jugador en el mapa de jugadores.
 
 
-### Mostrar perfil (nombre)
+### 2.  Mostrar perfil (nombre)
 La función mostrarDatosJugador se encarga de mostrar la información detallada del perfil de un jugador, incluyendo su nombre, puntos de habilidad e inventario. Si no hay objetos en el inventario, se muestra un mensaje indicando que está vacío.
 
 La función mostrarPerfil se encarga de buscar el perfil de un jugador en el sistema utilizando su nombre. Primero, verifica si hay jugadores registrados en el sistema. Si no hay jugadores registrados, muestra un mensaje indicando esto. Si hay jugadores, pide al usuario que ingrese el nombre del jugador que desea buscar y luego busca el perfil de ese jugador en el mapa de jugadores. Si el jugador no existe, muestra un mensaje indicándolo. Si el jugador existe, muestra los datos del perfil utilizando la función mostrarDatosJugador.
 
 
-### Agregar item (nombre, item)
+### 3.  Agregar item (nombre, item)
 La función agregarItemDef se encarga de agregar un ítem al inventario del jugador y actualizar el mapa de ítems con la información de qué jugadores tienen cada ítem.
 
 La función agregarItemBuscar pide al usuario el nombre del jugador y del ítem a agregar, busca al jugador en el mapa de jugadores y, si existe, agrega el ítem al inventario del jugador llamando a agregarItemDef. También guarda esta acción en el historial del jugador.
 
 
-### Eliminar item (nombre, item)
+### 4.  Eliminar item (nombre, item)
 La función eliminarItemJugadores se encarga de eliminar un ítem del inventario de un jugador y actualizar el mapa de ítems con la información de qué jugadores tienen cada ítem.
 
 Primero, la función pide al usuario que ingrese el nombre del jugador. Luego, busca al jugador en el mapa de jugadores utilizando el nombre ingresado. Si el jugador no existe, muestra un mensaje indicando esto y retorna. Si el jugador existe, pide al usuario que ingrese el nombre del ítem a eliminar.
@@ -64,7 +64,7 @@ Posteriormente, la función eliminaItemDelJugador se encarga de buscar el ítem 
 Si se logra eliminar el ítem, se guarda esta acción en el historial del jugador utilizando la estructura Acciones y la pila versiones del jugador.
 
 
-### Agregar puntos de habilidad (nombre, puntos)
+### 5.  Agregar puntos de habilidad (nombre, puntos)
 La función agregarPuntos se encarga de agregar puntos de habilidad a un jugador específico. Para ello, toma como argumento un puntero al HashMap jugadores que almacena los perfiles de los jugadores.
 
 La función solicita al usuario que ingrese el nombre del jugador al que se le agregarán los puntos de habilidad.
@@ -75,7 +75,7 @@ Se crea un objeto de tipo Acciones para almacenar la información de esta acció
 Finalmente, se muestra un mensaje informando que se agregaron los puntos de habilidad al jugador.
 
 
-### Mostrar jugador@s con item (item)
+### 6.  Mostrar jugador@s con item (item)
 La función mostrarItemJugadores se encarga de mostrar la lista de jugadores que tienen un ítem específico en su inventario. Para ello, toma como argumentos punteros a los HashMap jugadores y itemsMap que almacenan los perfiles de los jugadores y la información de los ítems, respectivamente.
 
 La función solicita al usuario que ingrese el nombre del ítem del cual se desea conocer los jugadores que lo tienen.
@@ -85,7 +85,7 @@ Se imprime un encabezado con el nombre del ítem en el centro y se itera sobre e
 Finalmente, se muestra un mensaje indicando el fin de la lista de jugadores con el ítem especificado.
 
     
-### Deshacer última acción (nombre)
+### 7.  Deshacer última acción (nombre)
 La función deshacerUltimaAccion permite deshacer la última acción realizada en el perfil de un jugador. Esta función toma como argumentos punteros a los HashMap jugadores e itemsMap, que almacenan los perfiles de los jugadores y los objetos disponibles en el juego.
 
 Primero, la función solicita al usuario que ingrese el nombre del jugador. Si el jugador no existe, se muestra un mensaje informando que el jugador no existe y se retorna.
@@ -96,7 +96,7 @@ A continuación, se evalúa el tipo de acción realizada para determinar cómo d
 
 Finalmente, se elimina la última acción de la pila de versiones del jugador.
 
-### Importar/exportar datos a archivo CVS.
+### 8.  Importar/exportar datos a archivo CVS.
 Estas funciones permiten importar y exportar datos de jugadores a un archivo en formato CSV.
 
 __Exportar datos (HashMap *jugadores)__
