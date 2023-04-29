@@ -11,12 +11,24 @@ Para compilar y ejecutar el programa, sigue estos pasos:
     ```
     git clone https://github.com/ignacio-ave/Tarea-N2-Stalker.git
     ```
-2. Abre una terminal en el directorio en el que se encuentran los archivos `main.c` y el resto de archivos.
+    
+2. Abre una terminal en el directorio en el que se encuentran los archivos `main.c` y los archivos que componene el programa:
+    hashmap.c: Implementación de la tabla hash.
+    hashmap.h: Encabezado para la tabla hash.
+    list.c: Implementación de la lista enlazada.
+    list.h: Encabezado para la lista enlazada.
+    main.c: Código principal del programa.
+    Makefile: Archivo Makefile para compilar y enlazar el proyecto.
+    printformato.c: Funciones de formato para la salida impresa.
+    printformato.h: Encabezado para las funciones de formato.
+    README.md: Documentación del proyecto.
+    stack.h: Encabezado para la estructura de datos de pila
 
 3. Escribe el comando `make -s` para compilar el programa:
     ```
     make -s
     ```
+    
 4. Escribe el comando `./main` para ejecutar el programa:
     ```
     ./main.c
