@@ -13,16 +13,16 @@ Para compilar y ejecutar el programa, sigue estos pasos:
     ```
     
 2. Abre una terminal en el directorio en el que se encuentran los archivos `main.c` y los archivos que componene el programa:
-    hashmap.c: Implementación de la tabla hash.
-    hashmap.h: Encabezado para la tabla hash.
-    list.c: Implementación de la lista enlazada.
-    list.h: Encabezado para la lista enlazada.
-    main.c: Código principal del programa.
-    Makefile: Archivo Makefile para compilar y enlazar el proyecto.
-    printformato.c: Funciones de formato para la salida impresa.
-    printformato.h: Encabezado para las funciones de formato.
-    README.md: Documentación del proyecto.
-    stack.h: Encabezado para la estructura de datos de pila
+    - hashmap.c: Implementación de la tabla hash.
+    - hashmap.h: Encabezado para la tabla hash.
+    - list.c: Implementación de la lista enlazada.
+    - list.h: Encabezado para la lista enlazada.
+    - main.c: Código principal del programa.
+    - Makefile: Archivo Makefile para compilar y enlazar el proyecto.
+    - printformato.c: Funciones de formato para la salida impresa.
+    - printformato.h: Encabezado para las funciones de formato.
+    - README.md: Documentación del proyecto.
+    - stack.h: Encabezado para la estructura de datos de pila
 
 3. Escribe el comando `make -s` para compilar el programa:
     ```
