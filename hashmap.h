@@ -31,4 +31,6 @@ Pair * nextMap(HashMap * table);
 
 void enlarge(HashMap * map);
 
+long sizeMap(HashMap *jugadores);
+
 #endif /* HashMap_h */

@@ -3223,7 +3223,7 @@ Patricia46,61,6,Escudo de madera,Casco de batalla,Poción de rapidez,Piedra de r
 Patricia47,92,5,Brazalete de fuerza,Arco de viento,Piedra de revivir,Poción de armadura,Botas de agilidad
 Patricia48,95,5,Flechas envenenadas,Cetro de hielo,Anillo de vida,Libro de runas,Espada
 Patricia49,42,4,Pergamino de tormenta,Varita mágica,Anillo de protección,Armadura de cuero
-Danial,69,6,Flechas envenenadas,Capa de invisibilidad,Cinturón de levitación,Poción de rapidez,Brazalete de fuerza,Collar de serpiente
+Danial,69,6,Flechas envenenadas,Capa de invisibilidad,Cinturón de levitación,Poción de rapidez,Collar de serpiente,Brazalete de fuerza
 Sherry4,34,2,Poción de rapidez,Poción de escarcha
 Sherry5,41,5,Grimorio de sombras,Daga,Piedra de iluminación,Guantes de escalada,Varita de control mental
 Sherry6,74,7,Casco de batalla,Antorcha mágica,Piedra de iluminación,Cetro de hielo,Arco largo,Piedra de revivir,Daga
@@ -7308,7 +7308,7 @@ Kyle2,53,3,Escudo de espinas,Libro de encantamientos,Daga
 Kyle3,69,7,Lanza,Brazalete de fuerza,Piedra de fuerza,Anillo de evasión,Bastón de ilusiones,Martillo de guerra,Anillo de teletransporte
 Kyle4,81,1,Poción de invisibilidad
 Kyle5,57,3,Poción de curación,Anillo de protección,Varita de control mental
-Tonya,99,3,Poción de resistencia,Armadura de mithril,Amuleto de poder
+Tonya,99,3,Poción de resistencia,Amuleto de poder,Armadura de mithril
 Hope,76,4,Libro de hechizos,Cinturón de levitación,Bastón de ilusiones,Cuchillo de viento
 Kyle6,65,7,Piedra de teletransporte,Cadenas de restricción,Casco de batalla,Arco largo,Collar de serpiente,Guantes de escalada,Martillo de guerra
 Kyle7,97,1,Casco de batalla
@@ -8643,7 +8643,7 @@ Julia,78,1,Poción de regeneración
 Betty17,83,8,Escudo de madera,Lanza,Libro de hechizos,Poción de rapidez,Poción de invisibilidad,Lanza de oscuridad,Collar de serpiente,Amuleto de poder
 Betty18,58,8,Armadura de cristal,Piedra de fuerza,Bastón de tierra,Cota de malla,Casco de cuero,Poción de regeneración,Poción de rapidez,Varita de control mental
 Betty19,99,3,Arco de viento,Poción de resistencia,Armadura de oscuridad
-Julie,48,3,Arco de viento,Martillo de destrucción,Cadenas de restricción
+Julie,48,3,Martillo de destrucción,Arco de viento,Cadenas de restricción
 Clayton6,48,6,Cetro de sabiduría,Cetro de fuego,Arco de viento,Casco de cuero,Hacha doble,Escudo de luz
 Dorothy26,56,4,Espada de fuego,Hacha de relámpago,Ballesta,Amuleto de poder
 Dorothy27,10,8,Lanza,Casco de hierro,Flechas de fuego,Pergamino de tormenta,Casco de sabiduría,Hacha doble,Anillo de teletransporte,Escudo de luz

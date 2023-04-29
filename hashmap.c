@@ -134,3 +134,7 @@ Pair * nextMap(HashMap * map) {
   }
   return NULL;
 }
+
+long sizeMap(HashMap *jugadores){
+  return jugadores->size;
+}

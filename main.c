@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <wchar.h>
+#include <wctype.h>
+#include <locale.h>
 #include "hashmap.h"
 #include "stack.h"
 #include "printformato.h"
@@ -22,12 +25,44 @@ typedef struct {
   Stack *versiones;
 } Jugador;
 
+//para poder imprimir el formato de salida de forma correcta debido a los acentos
+int printInventario(char *palabra){
+  
+    setlocale(LC_ALL, ""); 
+    mbstate_t state = {0};
+    const char *s = palabra;
+    size_t len = strlen(palabra);
+    wchar_t wc;
+    int tiene_acento = 0;
+    
+    while (s < palabra + len) {
+        size_t n = mbrtowc(&wc, s, len - (s - palabra), &state);
+        if (n == (size_t) -2 || n == (size_t) -1) {
+            break;
+        }
+        s += n;
+
+        if (iswalpha(wc) && wc > 127) {
+            tiene_acento++;
+            
+        }
+    }
+    len-=tiene_acento;
+    return len;
+}
+
+void printEspacios(int cantidad){
+
+  while(cantidad!=0){
+    printf(" ");
+    cantidad--;
+  }
+}
 
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////
-/*1. Crear perfil de jugador/a (nombre): El/la usuario/a ingresa un nombre de jugador/a y se crea un perfil en la aplicación. La cantidad de puntos de habilidad se inicializa en 0, y se genera un inventario vacío que almacenará los items que obtenga el/la jugador/a  a lo largo del juego.*/  
+/*1*/  
 
 
 void crearPerfil(HashMap *jugadores)
@@ -73,8 +108,8 @@ void crearPerfil(HashMap *jugadores)
 }
 
 
-/////////////////////////////////////////////////////////////////////////////////////////
-/*2. Mostrar perfil de jugador/a (nombre): El/la usuario/a ingresa el nombre de un/a jugador/a y la aplicación muestra su nombre, cantidad de puntos de habilidad y su inventario de items que ha obtenido hasta el momento.*/
+
+/*2*/
 
 void mostrarDatosJugador(Pair *par) {
     // Se muestran los datos del jugador
@@ -98,7 +133,13 @@ void mostrarDatosJugador(Pair *par) {
         
         while (temp) {
           printf("│");
-          printf("  -  %-*s│\n",53,temp->key);
+          //printf("  -  %-*s│\n",53,temp->key);
+          printf("  -  ");
+          printf("%s",temp->key);
+          int cantidadSpace=53-printInventario(temp->key);
+          printEspacios(cantidadSpace);
+          //printInventario(temp->key, 55);
+          printf("│\n");
           temp = nextMap(aux->items);
         }
     }
@@ -133,30 +174,24 @@ void mostrarPerfil( HashMap *jugadores ) {
 
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
-/*3. Agregar item a jugador/a (nombre, item): El/la usuario/a ingresa el nombre de un/a jugador/a y el nombre de un item que ha obtenido. La aplicación agrega el item al inventario de el/la jugador/a. Si el/la jugador/a no existe, se debe mostrar un aviso.*/
+/*3*/
 
-
-
-void agregarItemDef(Pair *jugador, char *item, HashMap *itemsMap) {
-  Jugador *aux = jugador->value;
-  insertMap(aux->items,item,NULL);
-  aux->nObj++;
+void agregarItemDef(char *nombre, Jugador *datos, char *item, HashMap *itemsMap) {
+  insertMap(datos->items,item,NULL);
+  datos->nObj++;
   
   //Verifica si el item fue ingresado
   Pair *temp = searchMap(itemsMap,item);
   if (!temp){
     HashMap *loTienen = createMap(10);
-    insertMap(loTienen,jugador->key, NULL);
+    insertMap(loTienen,nombre, NULL);
     insertMap(itemsMap,item,loTienen);
   }
   else {
-    if (!searchMap(temp->value,jugador->key)) {
-        insertMap(temp->value,jugador->key,NULL);
+    if (!searchMap(temp->value,nombre)) {
+        insertMap(temp->value,nombre,NULL);
     }
   }
-
-  printf("Se agrego el item %s al jugador %s\n",item,jugador->key);
 }
 
 
@@ -194,11 +229,11 @@ void agregarItemBuscar (HashMap *jugadores, HashMap *itemsMap){
     return;
   }
 
-/// Agregar función para expandir el inventario ///
   
-  // Se agrega el item al inventario
+  // Se agrega el item al inventario y se agrega al historial
   
-  agregarItemDef(jugador, item, itemsMap);
+  agregarItemDef(jugador->key, jugador->value, item, itemsMap);
+  printf("Se agrego el item %s al jugador %s\n",item,jugador->key);
   Jugador *aux = jugador->value;
   Acciones *new = (Acciones*) malloc(sizeof(Acciones));
   new->ultimaAcc = 3;
@@ -207,16 +242,21 @@ void agregarItemBuscar (HashMap *jugadores, HashMap *itemsMap){
 }
 
 
-/////////////////////////////////////////////////////////////////////////////////////////
-/*4. Eliminar item de jugador/a (nombre, item): El/la usuario/a ingresa el nombre de un/a jugador/a y el nombre de un item que desea eliminar. La aplicación elimina el item del inventario de el/la jugador/a. Si el/la jugador/a no existe o el item no está en el inventario, se debe mostrar un aviso.*/
+/*4*/
 
 
 // //busca el item y lo elimina con eliminarItem
-int eliminaItemDelJugador(Jugador *jugador,char *item){
+int eliminaItemDelJugador(char *nombre, Jugador *jugador,char *item, HashMap *itemsMap){
   Pair *itemBuscado=searchMap(jugador->items, item);
   if(itemBuscado || itemBuscado->key){
     jugador->nObj--;
     eraseMap(jugador->items, item);
+    Pair *parItem = searchMap(itemsMap, item);
+    HashMap *loTienen = parItem->value;
+    eraseMap(loTienen, nombre);
+    if (!firstMap(loTienen)) {
+      eraseMap(itemsMap, item);
+    }
     printf("Item eliminado correctamente\n");
     return 1;
   }
@@ -225,7 +265,7 @@ int eliminaItemDelJugador(Jugador *jugador,char *item){
 
 }
 
-void eliminarItemJugadores(HashMap *jugadores){
+void eliminarItemJugadores(HashMap *jugadores, HashMap *itemsMap){
   //se pide el nombre del jugador
   char *nombre=malloc(sizeof(char)* MAXCAR);
   printf("Ingrese el nombre del jugador :");
@@ -248,7 +288,7 @@ void eliminarItemJugadores(HashMap *jugadores){
   if(item==NULL){
     return;
   }
-  if (eliminaItemDelJugador(jugadorData, item)) {
+  if (eliminaItemDelJugador(jugadorPair->key, jugadorData, item, itemsMap)) {
     Acciones *accionEliminar = malloc(sizeof(Acciones));
     if(accionEliminar==NULL){
       printf("error al asignar memoria");
@@ -261,21 +301,10 @@ void eliminarItemJugadores(HashMap *jugadores){
   return;
 }
 
-/*
-
-printf("╭──────────────────────────────────────────────────────────╮\n");
-   printf("│                        INVENTARIO                        │\n");
-   printf("├──────────────────────────────────────────────────────────┤\n");
-   for(long i=0;i<jugadorData->nObj;i++){
-     printf("│");
-     printf("  -  %-*s│\n",53,jugadorData->);
-   }
-   printf("╰──────────────────────────────────────────────────────────╯\n");
-*/
 
 
-// /////////////////////////////////////////////////////////////////////////////////////////
-// /*5. Agregar puntos de habilidad a el/la jugador/a (nombre, puntos): El/la usuario/a ingresa el nombre de un/a jugador/a y la cantidad de puntos de habilidad obtenidos. Los puntos son sumados a la habilidad de el/la jugador/a.*/
+
+/*5.*/
 void agregarPuntos(HashMap *jugadores) {
   // Se pide el nombre del jugador
   char *nombre = malloc (sizeof(char) * MAXCAR); 
@@ -312,8 +341,7 @@ void agregarPuntos(HashMap *jugadores) {
 
 
 
-// /////////////////////////////////////////////////////////////////////////////////////////
-// /*6. Mostrar jugador@s con item específico (item): Se muestran todos los jugadores que tienen el item especificado.*/
+/*6*/
 
 void mostrarItemJugadores(HashMap *jugadores, HashMap *itemsMap){
   char *item=malloc(sizeof(char) * MAXCAR);
@@ -343,16 +371,35 @@ void mostrarItemJugadores(HashMap *jugadores, HashMap *itemsMap){
   
   printf("╭──────────────────────────────────────────────────────────╮\n");
   printf("│                   Jugadores que tienen                   │\n");
-  if (long_dato % 2 == 0)
+  /*if (long_dato % 2 == 0)
   {
     printf("│%*s%s%*s│\n", espacios, "", item, espacios, "");
   }
   else
   {
     printf("|%*s%s%*s |\n", espacios, "", item, espacios, "");
+  }*/
+  int espaciositemmedio=(58-printInventario(item))/2;
+  if(espaciositemmedio%2==0){
+    
+    printf("│");
+    printEspacios(espaciositemmedio);
+    printf("%s",item);
+    printEspacios(espaciositemmedio);
+    printf("│");
+    printf("\n");
+  }
+  else{
+    printf("│");
+    printEspacios(espaciositemmedio);
+    printf("%s",item);
+    printEspacios(espaciositemmedio);
+    printf(" │");
+    printf("\n");
   }
   
-  printf("|                     en su inventario                     |\n");
+  
+  printf("│                     en su inventario                     │\n");
   printf("├──────────────────────────────────────────────────────────┤\n");
   
   while (jugador) {
@@ -366,7 +413,7 @@ void mostrarItemJugadores(HashMap *jugadores, HashMap *itemsMap){
 }
 
 
-// /*7. Deshacer última acción de jugador/a (nombre): El/la usuario/a ingresa el nombre de un/a jugador/a y la aplicación deshace la última acción realizada por el/la jugador/a, ya sea agregar/eliminar un item o aumentar los puntos de habilidad. Si no hay acciones que deshacer para el/la jugador/a, se debe mostrar un aviso.*/
+/*7*/
 
 void deshacerUltimaAccion(HashMap *jugadores, HashMap *itemsMap) {
   // Se pide el nombre del jugador
@@ -395,10 +442,10 @@ void deshacerUltimaAccion(HashMap *jugadores, HashMap *itemsMap) {
       return;
       break;
     case 3:
-      eliminaItemDelJugador(pj, ultima->objeto);
+      eliminaItemDelJugador(jugador->key, pj, ultima->objeto, itemsMap);
       break;
     case 4 : 
-      agregarItemDef(jugador, ultima->objeto, itemsMap);
+      agregarItemDef(jugador->key, jugador->value, ultima->objeto, itemsMap);
       break; 
     case 5 :
       pj->pH -= ultima->ptosH;
@@ -410,7 +457,7 @@ void deshacerUltimaAccion(HashMap *jugadores, HashMap *itemsMap) {
   return;
 }
 
-/*8. Exportar datos de jugadores a archivo de texto (nombre_archivo): La aplicación exporta los datos de todos los/las jugadores/as registrados a un archivo de texto indicado por el/la usuario/a. */
+/*8 */
 
 void exportarDatos(HashMap *jugadores){
   
@@ -427,6 +474,7 @@ void exportarDatos(HashMap *jugadores){
     printf("No se pude abrir el archivo\n");
     return;
   }
+  fprintf(archivo, "Nombre,Puntos de habilidad,#items,Item 1,Item 2,Item 3,Item 4,Item 5,Item 6,Item 7,Item 8\n");
   
   Pair *local=firstMap(jugadores);
   if (local == NULL) {
@@ -464,14 +512,14 @@ void exportarDatos(HashMap *jugadores){
   
 }
 
-/*9. Cargar datos de jugadores desde un archivo de texto (nombre_archivo): La aplicación carga los datos de los/las jugadores/as registrados desde un archivo de texto indicado por el/la usuario/a. */
+/*9. */
 
 
-void maximoCaracteres(FILE *archivo, HashMap *jugadores){
+void maximoCaracteres(FILE *archivo, HashMap *jugadores, HashMap *itemsMap){
 
   char car;
   
-  
+  int Jugadoress=0;
   int saltarlinea=0;
   while(car!=EOF){
     if(saltarlinea==0){
@@ -481,11 +529,15 @@ void maximoCaracteres(FILE *archivo, HashMap *jugadores){
       saltarlinea++;
     }
     else{
+      Jugadoress++;
       char *nombre=malloc(sizeof(char)*MAXCAR);
       long poder;
       int numero;
       fscanf(archivo,"%[^,]",nombre);
       car=fgetc(archivo);
+      if(nombre[0]=='\0'){
+        break;
+      }
       Jugador *aux=malloc(sizeof(Jugador)*CantidadInicialDeJugadores);
       fscanf(archivo,"%lu",&poder);
       car=fgetc(archivo);
@@ -493,43 +545,39 @@ void maximoCaracteres(FILE *archivo, HashMap *jugadores){
       car=fgetc(archivo);
       if(numero==0)
       {
-        aux->items=NULL;
+        aux->items=createMap(CantidadInicialDeItems);
       }
 
       else{
-
+        
         aux->items=createMap(CantidadInicialDeItems);
         for(int i=0;i<numero;i++){
           char *item=malloc(sizeof(char)*MAXCAR);
           if(i==numero-1)break;
           fscanf(archivo,"%[^,]",item);
-          
+          agregarItemDef(nombre, aux, item, itemsMap);
           car=fgetc(archivo);
-
-          
-          insertMap(aux->items, item, NULL);
         }
+        
         char *item=malloc(sizeof(char)*MAXCAR);
         fscanf(archivo,"%[^\n]",item);
+        agregarItemDef(nombre, aux, item, itemsMap);
         int indice_salto = strcspn(item, "\r\n"); 
         if (indice_salto < strlen(item)) {
           item[indice_salto] = '\0'; 
         }
-
         car=fgetc(archivo);
-        
-        insertMap(aux->items, item, NULL);
       }
+      
       aux->nObj=numero;
       aux->pH=poder;
-  
-      
+      aux->versiones = stackCreate();
+      Acciones *inicio = (Acciones*) malloc(sizeof(Acciones));
+      inicio->ultimaAcc = 1;
+      stackPush(aux->versiones, inicio);
       insertMap(jugadores, nombre, aux);
     }
-    
-    
   }
-  
 }
 
 
@@ -540,7 +588,7 @@ void maximoCaracteres(FILE *archivo, HashMap *jugadores){
 
 
 
-void importarJugadores(HashMap *jugadores){
+void importarJugadores(HashMap *jugadores, HashMap *itemsMap){
 
   if(jugadores==NULL){
     jugadores = createMap(CantidadInicialDeJugadores);
@@ -556,9 +604,12 @@ void importarJugadores(HashMap *jugadores){
     return;
   }
 
-  maximoCaracteres(archivo,jugadores);
+  maximoCaracteres(archivo,jugadores, itemsMap);
   
   fclose(archivo);
+  printf("Se han importado %lu jugadores de manera exitosa\n", sizeMap(jugadores));
+  // Considero que no es necesario ponerlo, solo era para hacer test aa si era para probar
+  // printf("La cantidad de jugadores actual es de %lu\n", sizeMap(jugadores));
 }
 
 
@@ -593,7 +644,7 @@ int main(void) {
             agregarItemBuscar(jugadores, items);
             break;
           case '4' : 
-            eliminarItemJugadores(jugadores);
+            eliminarItemJugadores(jugadores, items);
             break; 
           case '5' :
             agregarPuntos(jugadores) ;
@@ -608,7 +659,7 @@ int main(void) {
             exportarDatos(jugadores);
             break ;
           case '9' : 
-            importarJugadores(jugadores);
+            importarJugadores(jugadores, items);
             break ; 
 
           case '0':
@@ -621,10 +672,12 @@ int main(void) {
         }
     } while (!valido);
 
-    // Este codigo se puede usar para sacar la condicion del primer while
-    // printf("\n¿Desea realizar otra acción? (s/n): ");
-    // scanf(" %c", &continuar);
+
   }
   
   return 0;
 }
+
+    // Este codigo se puede usar para sacar la condicion del primer while
+    // printf("\n¿Desea realizar otra acción? (s/n): ");
+    // scanf(" %c", &continuar);
