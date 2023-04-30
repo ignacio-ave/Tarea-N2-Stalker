@@ -5,4 +5,6 @@
 void printMenu();
 void printMensajeGeneroJugadorCorrectamente();
 void printMensajeJugadorRepetido();
+int printInventario(char *palabra);
+void printEspacios(int cantidad);
 #endif // PRINTFORMATO_H
